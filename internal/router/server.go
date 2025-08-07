@@ -1,14 +1,16 @@
 package router
 
 import (
-	_ "template-backend/internal/dto"
 	"os"
+	_ "template-backend/internal/dto"
 	"template-backend/internal/logger"
 	"template-backend/internal/middleware"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/adaptor"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/swagger"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
 func SetupApp() *fiber.App {
@@ -29,6 +31,7 @@ func SetupApp() *fiber.App {
 	})
 
 	app.Get("/swagger/*", swagger.HandlerDefault)
+	app.Get("/metrics", adaptor.HTTPHandler(promhttp.Handler()))
 	logger.ZapLogger.Info("swagger is ready")
 
 	logger.ZapLogger.Info("app is running!")

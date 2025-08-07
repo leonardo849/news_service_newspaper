@@ -5,12 +5,14 @@ import (
 	"os"
 	"template-backend/config"
 	"template-backend/internal/logger"
+	"template-backend/internal/prometheus"
 	"template-backend/internal/repository"
 	"template-backend/internal/router"
 	"template-backend/internal/validate"
 
-	"go.uber.org/zap"
 	_ "template-backend/docs"
+
+	"go.uber.org/zap"
 )
 
 // @title Backend Portfolio API
@@ -29,7 +31,7 @@ func main() {
 		logger.ZapLogger.Error("error in repository.connectodatabase", zap.String("function", "repository.ConnectToDatabase()"), zap.Error(err))
 		os.Exit(1)
 	}
-
+	prometheus.StartPrometheus()
 	validate.StartValidator()
 	if err := router.RunServer(); err != nil {
 		logger.ZapLogger.Error("error in run server", 
