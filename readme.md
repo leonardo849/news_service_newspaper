@@ -5,4 +5,5 @@ In config, create the ".env" file
 APP_ENV: string
 DATABASE_URI: string
 PORT: string
-
+REDIS_URI: string
+REDIS_DATABASE: string

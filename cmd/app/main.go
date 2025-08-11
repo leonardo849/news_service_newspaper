@@ -6,6 +6,7 @@ import (
 	"template-backend/config"
 	"template-backend/internal/logger"
 	"template-backend/internal/prometheus"
+	"template-backend/internal/redis"
 	"template-backend/internal/repository"
 	"template-backend/internal/router"
 	"template-backend/internal/validate"
@@ -29,6 +30,10 @@ func main() {
 	}
 	if _,err := repository.ConnectToDatabase(); err != nil {
 		logger.ZapLogger.Error("error in repository.connectodatabase", zap.String("function", "repository.ConnectToDatabase()"), zap.Error(err))
+		os.Exit(1)
+	}
+	if _, err := redis.ConnectToRedis(); err != nil {
+		logger.ZapLogger.Error("error in connect to redis", zap.String("function", "redis.ConnectToRedis"), zap.Error(err))
 		os.Exit(1)
 	}
 	prometheus.StartPrometheus()
