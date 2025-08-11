@@ -17,7 +17,7 @@ import (
 
 // @title Backend Portfolio API
 // @version 1.0
-// @description api for a [name] project
+// @description api for a news service
 // @host localhost:port
 // @BasePath /
 func main() {
