@@ -1,7 +1,7 @@
 package middleware
 
 import (
-	"template-backend/internal/prometheus"
+	"news_service/internal/prometheus"
 	"time"
 
 	"fmt"

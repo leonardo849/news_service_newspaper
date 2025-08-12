@@ -1,7 +1,7 @@
 package prometheus
 
 import (
-	"template-backend/internal/logger"
+	"news_service/internal/logger"
 
 	"github.com/prometheus/client_golang/prometheus"
 )

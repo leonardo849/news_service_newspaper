@@ -1,7 +1,7 @@
 package validate
 
 import (
-	"template-backend/internal/logger"
+	"news_service/internal/logger"
 
 	"github.com/go-playground/validator/v10"
 )

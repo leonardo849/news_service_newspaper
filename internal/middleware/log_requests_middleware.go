@@ -1,7 +1,7 @@
 package middleware
 
 import (
-	"template-backend/internal/logger"
+	"news_service/internal/logger"
 
 	"github.com/gofiber/fiber/v2"
 )

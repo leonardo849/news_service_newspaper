@@ -2,9 +2,9 @@ package router
 
 import (
 	"os"
-	_ "template-backend/internal/dto"
-	"template-backend/internal/logger"
-	"template-backend/internal/middleware"
+	_ "news_service/internal/dto"
+	"news_service/internal/logger"
+	"news_service/internal/middleware"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/adaptor"

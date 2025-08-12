@@ -3,15 +3,15 @@ package main
 import (
 	"log"
 	"os"
-	"template-backend/config"
-	"template-backend/internal/logger"
-	"template-backend/internal/prometheus"
-	"template-backend/internal/redis"
-	"template-backend/internal/repository"
-	"template-backend/internal/router"
-	"template-backend/internal/validate"
+	"news_service/config"
+	"news_service/internal/logger"
+	"news_service/internal/prometheus"
+	"news_service/internal/redis"
+	"news_service/internal/repository"
+	"news_service/internal/router"
+	"news_service/internal/validate"
 
-	_ "template-backend/docs"
+	_ "news_service/docs"
 
 	"go.uber.org/zap"
 )
