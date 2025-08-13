@@ -2,8 +2,8 @@ basePath: /
 host: localhost:port
 info:
   contact: {}
-  description: api for a [name] project
-  title: Backend Portfolio API
+  description: api for a news service
+  title: Backend News service
   version: "1.0"
 paths: {}
 swagger: "2.0"
