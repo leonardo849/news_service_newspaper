@@ -8,9 +8,9 @@ RUN go mod download
 
 COPY . /app/
 
-ENV PORT="8080"
+ENV PORT="8082"
 ENV APP_ENV="PROD"
-ENV DATABASE_NAME="backend_template"
+ENV DATABASE_NAME="news_template"
 RUN go build -o main ./cmd/app/main.go
 
 # run
@@ -18,6 +18,6 @@ FROM alpine:latest
 
 WORKDIR /app
 COPY --from=builder /app/main .
-EXPOSE 8080
+EXPOSE 8082
 
 CMD [ "./main" ]
