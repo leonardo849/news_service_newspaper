@@ -16,7 +16,7 @@ import (
 	"go.uber.org/zap"
 )
 
-// @title Backend Portfolio API
+// @title Backend News service 
 // @version 1.0
 // @description api for a news service
 // @host localhost:port
