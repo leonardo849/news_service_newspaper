@@ -99,7 +99,6 @@ func startConsumer() {
 	c := getRabbitMQClient()
 	
 	go c.consumeTopicUserAuth()
-	select {}
 }
 
 
