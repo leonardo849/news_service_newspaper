@@ -95,7 +95,6 @@ func ConnectToRabbitMQ() error {
 }
 
 func startConsumer() {
-	
 	c := getRabbitMQClient()
 	
 	go c.consumeTopicUserAuth()

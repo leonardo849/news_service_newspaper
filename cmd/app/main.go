@@ -31,15 +31,16 @@ func main() {
 		log.Fatal(err.Error())
 	}
 	logger.ZapLogger.Info("logger is ready")
-	if err := rabbitmq.ConnectToRabbitMQ(); err != nil {
-		logger.ZapLogger.Error(err.Error(), zap.Error(err))
-	}
-	logger.ZapLogger.Info("rabbit is ready")
 	if _,err := repository.ConnectToDatabase(); err != nil {
 		logger.ZapLogger.Error("error in repository.connectodatabase", zap.String("function", "repository.ConnectToDatabase()"), zap.Error(err))
 		os.Exit(1)
 	}
 	logger.ZapLogger.Info("db is ready")
+	if err := rabbitmq.ConnectToRabbitMQ(); err != nil {
+		logger.ZapLogger.Error(err.Error(), zap.Error(err))
+	}
+	logger.ZapLogger.Info("rabbit is ready")
+	
 	if _, err := redis.ConnectToRedis(); err != nil {
 		logger.ZapLogger.Error("error in connect to redis", zap.String("function", "redis.ConnectToRedis"), zap.Error(err))
 		os.Exit(1)
