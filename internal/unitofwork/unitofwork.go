@@ -6,3 +6,9 @@ type UnitOfWork struct {
 	userRepository *repository.UserRepository
 }
 
+func CreateUnitOfWork(userRepository *repository.UserRepository) *UnitOfWork {
+	return  &UnitOfWork{
+		userRepository: userRepository,
+	}
+}
+
