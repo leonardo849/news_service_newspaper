@@ -64,22 +64,23 @@ func (u *UserRepository) CreateUsers(input []dtoSl.AuthPublishUserCreated) error
 	return  nil
 }
 
-func (u *UserRepository) DoAuthorsExist(ids []uuid.UUID) (bool, error) {
+func (u *UserRepository) DoAuthorsExistAndReturnAuthors(ids []uuid.UUID) ([]model.UserModel, error) {
 	if len(ids) == 0 {
-		return false, nil
+		return nil, fmt.Errorf("[%s]there is no id", errorsUfb.BADREQUEST)
 	}
 	var count int64
 	var users []model.UserModel
-	err := u.db.Select("id", "role").Where("id IN ?", ids).Find(&users).Count(&count).Error
+	err := u.db.Where("id IN ?", ids).Find(&users).Count(&count).Error
 	if err != nil {
-		return  false, err
+		logger.ZapLogger.Error("error in find authors", zap.Error(err))
+		return  nil, fmt.Errorf("[%s] %s", errorsUfb.NOTFOUND, err.Error())
 	}
 	for _, user := range users {
 		if user.Role != constsSl.Journalist {
-			return false, nil
+			return nil, fmt.Errorf("[%s]users aren't journalist ", errorsUfb.UNAUTHORIZED)
 		}
 	}
-	return count == int64(len(ids)), nil
+	return nil, nil
 }
 
 func (u *UserRepository) SetDatabase(db *gorm.DB) {
