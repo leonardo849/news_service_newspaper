@@ -13,6 +13,8 @@ type BlockModel struct {
 	Images []ImageModel `json:"images" gorm:"foreignKey:BlockID;references:ID;constraint:OnDelete:CASCADE;"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
+	Position uint `json:"position"`
+	NewsID uuid.UUID
 }	
 
 func (b *BlockModel) BeforeCreate(tx *gorm.DB) (err error) {

@@ -9,7 +9,7 @@ import (
 
 type UserModel struct {
 	ID        uuid.UUID `gorm:"type:uuid;primaryKey" json:"id"`
-	News []NewsModel `json:"news" gorm:"many2many:authors_news;"`
+	News []NewsModel `json:"-" gorm:"many2many:authors_news;"`
 	AuthId    string    `json:"auth_id"`
 	Username  string    `gorm:"size:50;unique;not null" json:"username"`
 	Role      string    `gorm:"default:'CUSTOMER';not null"`

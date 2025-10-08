@@ -8,6 +8,7 @@ import (
 
 	"github.com/google/uuid"
 	dtoSl "github.com/leonardo849/shared_library_news_paper/pkg/dto"
+	constsSl "github.com/leonardo849/shared_library_news_paper/pkg/consts"
 	errorsUfb "github.com/leonardo849/utils_for_backend/pkg/errors"
 	"github.com/thoas/go-funk"
 	"go.uber.org/zap"
@@ -61,6 +62,24 @@ func (u *UserRepository) CreateUsers(input []dtoSl.AuthPublishUserCreated) error
 	}
 	logger.ZapLogger.Info("users were created")
 	return  nil
+}
+
+func (u *UserRepository) DoAuthorsExist(ids []uuid.UUID) (bool, error) {
+	if len(ids) == 0 {
+		return false, nil
+	}
+	var count int64
+	var users []model.UserModel
+	err := u.db.Select("id", "role").Where("id IN ?", ids).Find(&users).Count(&count).Error
+	if err != nil {
+		return  false, err
+	}
+	for _, user := range users {
+		if user.Role != constsSl.Journalist {
+			return false, nil
+		}
+	}
+	return count == int64(len(ids)), nil
 }
 
 func (u *UserRepository) SetDatabase(db *gorm.DB) {

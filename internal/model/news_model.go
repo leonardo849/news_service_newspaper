@@ -14,6 +14,7 @@ type NewsModel struct {
 	Subtitle string `json:"subtitle" gorm:"size:100;not null"`
 	Topic string `json:"topic" gorm:"size:100;not null"`
 	Status string `json:"status" gorm:"default:'SKETCH';not null"`
+	Blocks []BlockModel `gorm:"foreignKey:NewsID;references:ID;constraint:OnDelete:CASCADE;"`
 	Published_at *time.Time `json:"published_at"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
