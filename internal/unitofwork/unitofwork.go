@@ -12,12 +12,17 @@ import (
 type UnitOfWork struct {
 	userRepository *repository.UserRepository
 	newsRepository *repository.NewsRepository
+	imageRepository *repository.ImageRepository
+	blockRepository *repository.BlockRepository
 	db *gorm.DB
 }
 
-func CreateUnitOfWork(userRepository *repository.UserRepository, db *gorm.DB) *UnitOfWork {
+func CreateUnitOfWork(userRepository *repository.UserRepository, db *gorm.DB, imageRepository *repository.ImageRepository, newsRepository *repository.NewsRepository, blockRepository *repository.BlockRepository) *UnitOfWork {
 	return  &UnitOfWork{
 		userRepository: userRepository,
+		newsRepository: newsRepository,
+		imageRepository: imageRepository,
+		blockRepository: blockRepository,
 		db: db,
 	}
 }
@@ -27,10 +32,12 @@ func (u *UnitOfWork) CreateNews(input dto.CreateNewsDTO, authors []model.UserMod
 	err := u.db.Transaction(func(tx *gorm.DB) error {
 		var err error
 		
+		
+		
 
 		id, err = u.newsRepository.CreateNews(input, authors, tx)
 		if err != nil {
-			return nil
+			return err
 		}
 		return  nil
 	})

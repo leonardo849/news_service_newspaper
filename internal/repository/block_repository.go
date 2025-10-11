@@ -20,7 +20,7 @@ func (b *BlockRepository) CreateBlock(tx *gorm.DB, input model.BlockModel) error
 		logger.ZapLogger.Error("error find block by position", zap.Error(err))
 		return err
 	}
-	model := &model.BlockModel{
+	model := model.BlockModel{
 		Content: input.Content,
 		Position: input.Position,
 		NewsID: input.NewsID,
