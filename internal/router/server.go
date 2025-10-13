@@ -1,19 +1,21 @@
 package router
 
 import (
-	"os"
 	_ "news_service/internal/dto"
 	"news_service/internal/logger"
+	"os"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/adaptor"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/swagger"
-	"github.com/prometheus/client_golang/prometheus/promhttp"
 	middlewaresSl "github.com/leonardo849/shared_library_news_paper/pkg/middlewares"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
+	"github.com/redis/go-redis/v9"
+	"gorm.io/gorm"
 )
 
-func SetupApp() *fiber.App {
+func SetupApp(db *gorm.DB, rc *redis.Client) *fiber.App {
 	app := fiber.New()
 	app.Use(cors.New())
 	
@@ -30,16 +32,19 @@ func SetupApp() *fiber.App {
 		return ctx.Status(200).JSON(fiber.Map{"message": "what's up?"})
 	})
 
+	
 	app.Get("/swagger/*", swagger.HandlerDefault)
 	app.Get("/metrics", adaptor.HTTPHandler(promhttp.Handler()))
-	logger.ZapLogger.Info("swagger is ready")
+	logger.ZapLogger.Info("swagger and prometheus are ready")
 
+	newsGroup := app.Group("/news")
+	setupNewsRoutes(newsGroup, db, rc)
 	logger.ZapLogger.Info("app is running!")
 	return  app
 }
 
-func RunServer() error {
-	app := SetupApp()
+func RunServer(db *gorm.DB, rc *redis.Client) error {
+	app := SetupApp(db, rc)
 
 	port := os.Getenv("PORT")
 	if port == "" {

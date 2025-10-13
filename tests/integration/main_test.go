@@ -49,7 +49,7 @@ func TestMain(m *testing.M) {
 	validate.StartValidator()
 	
 	DB = db
-	app = router.SetupApp()
+	app = router.SetupApp(db, nil)
 	sqldb, err := db.DB()
 	if err != nil {
 		log.Panic(err.Error())

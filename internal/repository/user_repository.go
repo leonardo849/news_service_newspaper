@@ -46,6 +46,18 @@ func (u *UserRepository) CreateUser(input dtoSl.AuthPublishUserCreated) (*uuid.U
 	return &userModel.ID, nil
 }
 
+func (u *UserRepository) FindOneUserIdByAuthId(authId string) (*uuid.UUID, error) {
+	var user model.UserModel
+	if err := u.db.Select("id").Where("auth_id = ?", authId).First(&user).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, fmt.Errorf("[%s] %s", errorsUfb.NOTFOUND, "user wasn't found")
+		} else {
+			return nil, fmt.Errorf("[%s] %s", errorsUfb.INTERNALSERVER, err.Error())
+		}
+	}
+	return &user.ID, nil
+}
+
 func (u *UserRepository) CreateUsers(input []dtoSl.AuthPublishUserCreated) error {
 	users := funk.Map(input, func(element dtoSl.AuthPublishUserCreated) *model.UserModel {
 		return &model.UserModel{

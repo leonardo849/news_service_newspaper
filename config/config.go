@@ -30,6 +30,7 @@ func SetupEnvVar() error {
 	} else {
 		log.Print("prod mode")
 	}
+	Key = os.Getenv("SECRETWORDJWT")
 	return  nil
 
 }

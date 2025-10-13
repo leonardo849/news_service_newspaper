@@ -19,11 +19,28 @@ type NewsService struct {
 	model string
 }
 
+func CreateNewsService(newsRepository *repository.NewsRepository, userRepository *repository.UserRepository, unitOfWork *unitofwork.UnitOfWork ) *NewsService {
+	return  &NewsService{
+		newsRepository: newsRepository,
+		userRepository: userRepository,
+		unitOfWork: unitOfWork,
+		model: "news",
+	}
+}
+
 func (n *NewsService) CreateNews(input dto.CreateNewsDTO, id string) (status int, message interface{}) {
 	if err := validate.Validate.Struct(input); err != nil {
 		return 400, err.Error()
 	}
-	ids := []uuid.UUID{uuid.MustParse(id)}
+	
+	idUser, err := n.userRepository.FindOneUserIdByAuthId(id)
+	if err != nil {
+		logger.ZapLogger.Error("error userrepository.findoneuseridbyauthid", zap.Error(err))
+		status, message = errorsSl.HandleErrors(err, n.model)
+		return status, message
+	}
+
+	ids := []uuid.UUID{*idUser}
 
 	for _, e := range input.Authors {
 		ids = append(ids, uuid.MustParse(e))

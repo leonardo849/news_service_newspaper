@@ -16,6 +16,12 @@ type BlockRepository struct {
 	db *gorm.DB
 }
 
+func CreateBlockRepository(db *gorm.DB) *BlockRepository {
+	return  &BlockRepository{
+		db: db,
+	}
+}
+
 func (b *BlockRepository) CreateBlock(tx *gorm.DB, input model.BlockModel) (*uuid.UUID, error) {
 	if err := b.FindBlockByPosition(input.NewsID.String(), input.Position, tx); err != nil {
 		logger.ZapLogger.Error("error find block by position", zap.Error(err))

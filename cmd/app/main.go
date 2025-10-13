@@ -11,10 +11,11 @@ import (
 	"news_service/internal/router"
 	"news_service/internal/validate"
 	"os"
-
+	redisLib "github.com/redis/go-redis/v9"
 	_ "news_service/docs"
 
 	"go.uber.org/zap"
+	"gorm.io/gorm"
 )
 
 // @title Backend News service
@@ -23,6 +24,8 @@ import (
 // @host localhost:port
 // @BasePath /
 func main() {
+	
+
 	if err := config.SetupEnvVar(); err != nil {
 		log.Fatal(err.Error())
 	}
@@ -31,7 +34,9 @@ func main() {
 		log.Fatal(err.Error())
 	}
 	logger.ZapLogger.Info("logger is ready")
-	if _,err := repository.ConnectToDatabase(); err != nil {
+	var err error
+	var db *gorm.DB
+	if db,err = repository.ConnectToDatabase(); err != nil {
 		logger.ZapLogger.Error("error in repository.connectodatabase", zap.String("function", "repository.ConnectToDatabase()"), zap.Error(err))
 		os.Exit(1)
 	}
@@ -40,8 +45,8 @@ func main() {
 		logger.ZapLogger.Error(err.Error(), zap.Error(err))
 	}
 	logger.ZapLogger.Info("rabbit is ready")
-	
-	if _, err := redis.ConnectToRedis(); err != nil {
+	var rc *redisLib.Client
+	if rc, err = redis.ConnectToRedis(); err != nil {
 		logger.ZapLogger.Error("error in connect to redis", zap.String("function", "redis.ConnectToRedis"), zap.Error(err))
 		os.Exit(1)
 	}
@@ -50,7 +55,7 @@ func main() {
 	logger.ZapLogger.Info("prometheus is ready")
 	validate.StartValidator()
 	logger.ZapLogger.Info("validate is ready")
-	if err := router.RunServer(); err != nil {
+	if err := router.RunServer(db, rc); err != nil {
 		logger.ZapLogger.Error("error in run server", 
 		zap.Error(err),
 		zap.String("function", "router.RunServer()"),

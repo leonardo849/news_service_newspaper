@@ -14,6 +14,12 @@ type NewsRepository struct {
 	db *gorm.DB
 }
 
+func CreateNewsRepository(db *gorm.DB) *NewsRepository {
+	return  &NewsRepository{
+		db: db,
+	}
+}
+
 func (n *NewsRepository) CreateNews(input dto.CreateNewsDTO, authors []model.UserModel, tx *gorm.DB) (*uuid.UUID, error) {
 	news := model.NewsModel{
 		Title:input.Title,

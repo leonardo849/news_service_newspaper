@@ -14,6 +14,12 @@ type ImageRepository struct {
 	db *gorm.DB
 }
 
+func CreateImageRepository(db *gorm.DB) *ImageRepository {
+	return &ImageRepository{
+		db: db,
+	}
+}
+
 func (i *ImageRepository) CreateImage(input model.ImageModel, tx *gorm.DB) error {
 	image := model.ImageModel{
 		URL: input.URL,
