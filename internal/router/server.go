@@ -4,13 +4,13 @@ import (
 	"os"
 	_ "news_service/internal/dto"
 	"news_service/internal/logger"
-	"news_service/internal/middleware"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/adaptor"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/swagger"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
+	middlewaresSl "github.com/leonardo849/shared_library_news_paper/pkg/middlewares"
 )
 
 func SetupApp() *fiber.App {
@@ -18,7 +18,7 @@ func SetupApp() *fiber.App {
 	app.Use(cors.New())
 	
 	logger.ZapLogger.Info("cors is ready")
-	app.Use(middleware.LogRequestsMiddleware())
+	app.Use(middlewaresSl.LogRequestsMiddleware())
 	
 	// @Summary Hello
 	// @Description welcome message

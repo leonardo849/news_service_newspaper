@@ -10,6 +10,7 @@ import (
 )
 
 var errProjectRootNotFound = os.ErrNotExist
+var Key string
 
 func SetupEnvVar() error {
 	mode := strings.ToUpper(os.Getenv("APP_ENV"))

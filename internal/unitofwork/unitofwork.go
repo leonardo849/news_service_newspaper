@@ -32,7 +32,7 @@ func CreateUnitOfWork(userRepository *repository.UserRepository, db *gorm.DB, im
 
 func (u *UnitOfWork) CreateNews(input dto.CreateNewsDTO, authors []model.UserModel) (string, error) {
 	var id *uuid.UUID
-	err := u.db.Transaction(func(tx *gorm.DB) error {
+	errTx := u.db.Transaction(func(tx *gorm.DB) error {
 		var err error
 		
 		
@@ -71,6 +71,6 @@ func (u *UnitOfWork) CreateNews(input dto.CreateNewsDTO, authors []model.UserMod
 		
 		return  nil
 	})
-	return  id.String(), err
+	return  id.String(), errTx
 }
 
