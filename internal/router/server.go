@@ -1,6 +1,7 @@
 package router
 
 import (
+	"news_service/config"
 	_ "news_service/internal/dto"
 	"news_service/internal/logger"
 	"os"
@@ -9,6 +10,7 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/adaptor"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/swagger"
+	constsSl "github.com/leonardo849/shared_library_news_paper/pkg/consts"
 	middlewaresSl "github.com/leonardo849/shared_library_news_paper/pkg/middlewares"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/redis/go-redis/v9"
@@ -33,7 +35,7 @@ func SetupApp(db *gorm.DB, rc *redis.Client) *fiber.App {
 	})
 
 	
-	app.Get("/swagger/*", swagger.HandlerDefault)
+	app.Get("/swagger/*",  middlewaresSl.VerifyJWT(config.Key), middlewaresSl.CheckRole([]string{constsSl.Developer, constsSl.Journalist}) ,swagger.HandlerDefault)
 	app.Get("/metrics", adaptor.HTTPHandler(promhttp.Handler()))
 	logger.ZapLogger.Info("swagger and prometheus are ready")
 

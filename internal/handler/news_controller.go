@@ -20,6 +20,19 @@ func CreateNewsController(newsService *service.NewsService) *NewsController {
 	}
 }
 
+
+// @Summary     create news
+// @Tags        news
+// @Accept      json
+// @Produce     json
+// @Param       news body dto.CreateNewsDTO true "news data"
+// @Success     200 {object} dto.CreatedMessage
+// @Failure     400 {object} dto.ErrorDTO
+// @Failure     401 {object} dto.ErrorDTO
+// @Failure     403 {object} dto.ErrorDTO
+// @Failure     500 {object} dto.ErrorDTO
+// @Router      /news/create [post]
+// @Security    JWT
 func (n *NewsController) CreateNews() fiber.Handler {
  	return func(ctx *fiber.Ctx) error {
 		mapClaims := ctx.Locals("user").(jwt.MapClaims)

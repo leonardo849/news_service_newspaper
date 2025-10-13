@@ -1,9 +1,106 @@
 basePath: /
+definitions:
+  dto.CreateBlockDTO:
+    properties:
+      content:
+        maxLength: 1000
+        type: string
+      images:
+        items:
+          $ref: '#/definitions/dto.CreateImageDTO'
+        type: array
+      position:
+        type: integer
+    required:
+    - content
+    - position
+    type: object
+  dto.CreateImageDTO:
+    properties:
+      block_id:
+        type: string
+      url:
+        type: string
+    required:
+    - block_id
+    - url
+    type: object
+  dto.CreateNewsDTO:
+    properties:
+      authors:
+        items:
+          type: string
+        maxItems: 6
+        type: array
+      blocks:
+        items:
+          $ref: '#/definitions/dto.CreateBlockDTO'
+        maxItems: 20
+        minItems: 1
+        type: array
+      subtitle:
+        type: string
+      title:
+        type: string
+      topic:
+        type: string
+    type: object
+  dto.CreatedMessage:
+    properties:
+      id:
+        type: string
+      message:
+        type: string
+    type: object
+  dto.ErrorDTO:
+    properties:
+      error:
+        type: string
+    type: object
 host: localhost:port
 info:
   contact: {}
-  description: api for a [name] project
-  title: Backend Portfolio API
+  description: api for a news service
+  title: Backend News service
   version: "1.0"
-paths: {}
+paths:
+  /news/create:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: news data
+        in: body
+        name: news
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreateNewsDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.CreatedMessage'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.ErrorDTO'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/dto.ErrorDTO'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/dto.ErrorDTO'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.ErrorDTO'
+      security:
+      - JWT: []
+      summary: create news
+      tags:
+      - news
 swagger: "2.0"
