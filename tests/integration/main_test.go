@@ -152,6 +152,7 @@ func migrateSeeds(db *gorm.DB, secret string) error {
 			customer = user
 		} else if u.Role == constsSl.Journalist {
 			journalist = user
+			log.Print("auth_id:" + journalist.Id)
 		} else if u.Role == constsSl.Developer {
 			developer = user
 		}
