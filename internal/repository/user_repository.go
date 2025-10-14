@@ -7,8 +7,8 @@ import (
 	"news_service/internal/model"
 
 	"github.com/google/uuid"
-	dtoSl "github.com/leonardo849/shared_library_news_paper/pkg/dto"
 	constsSl "github.com/leonardo849/shared_library_news_paper/pkg/consts"
+	dtoSl "github.com/leonardo849/shared_library_news_paper/pkg/dto"
 	errorsUfb "github.com/leonardo849/utils_for_backend/pkg/errors"
 	"github.com/thoas/go-funk"
 	"go.uber.org/zap"
@@ -48,7 +48,7 @@ func (u *UserRepository) CreateUser(input dtoSl.AuthPublishUserCreated) (*uuid.U
 
 func (u *UserRepository) FindOneUserIdByAuthId(authId string) (*uuid.UUID, error) {
 	var user model.UserModel
-	if err := u.db.Select("id").Where("auth_id = ?", authId).First(&user).Error; err != nil {
+	if err := u.db.Where("auth_id = ?", authId).First(&user).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, fmt.Errorf("[%s] %s", errorsUfb.NOTFOUND, "user wasn't found")
 		} else {
@@ -92,7 +92,7 @@ func (u *UserRepository) DoAuthorsExistAndReturnAuthors(ids []uuid.UUID) ([]mode
 			return nil, fmt.Errorf("[%s]users aren't journalist ", errorsUfb.UNAUTHORIZED)
 		}
 	}
-	return nil, nil
+	return users, nil
 }
 
 func (u *UserRepository) SetDatabase(db *gorm.DB) {

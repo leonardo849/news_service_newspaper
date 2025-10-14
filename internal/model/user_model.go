@@ -18,7 +18,9 @@ type UserModel struct {
 	UpdatedAt time.Time `json:"updated_at"`
 }
 
-func (u *UserModel) BeforeCreate(tx *gorm.DB) (err error) {
-	u.ID = uuid.New()
+func (u *UserModel) BeforeCreate(tx *gorm.DB) (err error) { 
+	if u.ID == uuid.Nil {
+		u.ID = uuid.New()
+	}
 	return
 }
