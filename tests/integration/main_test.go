@@ -18,12 +18,14 @@ import (
 	"os"
 	"path/filepath"
 	"testing"
-
-	"github.com/google/uuid"
-	redisLib "github.com/redis/go-redis/v9"
+	"time"
 
 	"github.com/gavv/httpexpect/v2"
 	"github.com/gofiber/fiber/v2"
+	"github.com/google/uuid"
+	constsSl "github.com/leonardo849/shared_library_news_paper/pkg/consts"
+	jwtSl "github.com/leonardo849/shared_library_news_paper/pkg/jwt"
+	redisLib "github.com/redis/go-redis/v9"
 	"gorm.io/gorm"
 )
 
@@ -43,6 +45,18 @@ func (rt fiberRoundTripper) RoundTrip(req *http.Request) (*http.Response, error)
 }
 
 var DB *gorm.DB
+
+type User struct {
+	Role string
+	Token string
+	Id string
+	Username string
+}
+
+var journalist User
+var developer User
+var customer User
+var ceo User
 
 func TestMain(m *testing.M) {
 	err := config.SetupEnvVar()
@@ -74,9 +88,9 @@ func TestMain(m *testing.M) {
 	if err != nil {
 		log.Panic(err.Error())
 	}
-	
 	cleanDatabase(db, rc)
-	migrateSeeds(db)
+	secret := os.Getenv("SECRETWORDJWT")
+	migrateSeeds(db, secret)
 	code := m.Run()
 	cleanDatabase(db, rc)
 	sqldb.Close()
@@ -94,7 +108,16 @@ func newExpect(t *testing.T) *httpexpect.Expect {
 	})
 }
 
-func migrateSeeds(db *gorm.DB) error {
+func generateJwt(id string, updatedAt time.Time, role string, secret string) (string, error) {
+	jwt, err := jwtSl.GenerateJWT(id, updatedAt, role, secret)
+	if err != nil {
+		logger.ZapLogger.Error(err.Error())
+		return  "", err
+	}
+	return  jwt, nil
+}
+
+func migrateSeeds(db *gorm.DB, secret string) error {
 	projectRoot := config.FindProjectRoot()
 	path := filepath.Join(projectRoot ,"config", "users.json")
 	data, err := os.ReadFile(path)
@@ -110,8 +133,30 @@ func migrateSeeds(db *gorm.DB) error {
 	var usersModel []*model.UserModel
 
 	for _, u := range users {
+		authId := uuid.New().String()
+
+		token, err := generateJwt(authId, time.Now().Add(-5 *time.Minute), u.Role, secret)
+		if err != nil {
+			logger.ZapLogger.Error(err.Error())
+			return  err
+		}
+		user := User{
+			Role: u.Role,
+			Token: token,
+			Id: authId,
+			Username: u.Username,
+		}
+		if u.Role == constsSl.Ceo {
+			ceo = user
+		} else if u.Role == constsSl.Customer {
+			customer = user
+		} else if u.Role == constsSl.Journalist {
+			journalist = user
+		} else if u.Role == constsSl.Developer {
+			developer = user
+		}
 		usersModel = append(usersModel, &model.UserModel{
-			AuthId: uuid.New().String(),
+			AuthId: authId,
 			Username: u.Username,
 			Role: u.Role,
 		})

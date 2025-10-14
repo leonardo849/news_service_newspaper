@@ -108,6 +108,8 @@ github.com/leonardo849/shared_library_news_paper v1.4.0 h1:6y0WjjcuW2/fZbpHM1oZK
 github.com/leonardo849/shared_library_news_paper v1.4.0/go.mod h1:HqKVGDt5+jV0nh27yQmdGJDWMuU4HWogkFtdGvZ2xH0=
 github.com/leonardo849/shared_library_news_paper v1.5.0 h1:Q4d6Mmga+5x8Z0UfSfe0lnbyQd+RBMtMAbUzA17Ox+8=
 github.com/leonardo849/shared_library_news_paper v1.5.0/go.mod h1:HxJhqWNcrPHuRbv0q6AJiM5fwq4bHktUQqwTZp0Vg4w=
+github.com/leonardo849/shared_library_news_paper v1.6.0 h1:+ULaAJRxvHrixGHj52V9whhSwA1NInuS98+5A41O45c=
+github.com/leonardo849/shared_library_news_paper v1.6.0/go.mod h1:ijiwiPzQh3o/ftosr70V+2MqoTrTj0OISuuztXMKbHM=
 github.com/leonardo849/utils_for_backend v0.0.0-20250906181309-4d8adb83eb6e h1:wYkBPJq0kr+KEhlob/gX1JatJDRRVZ3OZGY15AaZwEs=
 github.com/leonardo849/utils_for_backend v0.0.0-20250906181309-4d8adb83eb6e/go.mod h1:f/5tY88Ali42NJbcN7V1BNNSUPVPWacKHHnF2iKFe4o=
 github.com/leonardo849/utils_for_backend v1.1.0 h1:F0dIwW+mcngDdtj0t1tXEvgH9s+HjgJ21smSZK4V2cM=
