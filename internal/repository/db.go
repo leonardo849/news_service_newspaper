@@ -2,9 +2,12 @@ package repository
 
 import (
 	"fmt"
-	_ "news_service/internal/model"
 	"log"
+	"news_service/internal/logger"
+	"news_service/internal/model"
+	_ "news_service/internal/model"
 	"os"
+
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
@@ -25,11 +28,12 @@ func ConnectToDatabase() (*gorm.DB, error) {
 	if err != nil {
 		return nil, err
 	}
+	logger.ZapLogger.Info("database is ready")
 	return db, nil
 }
 
 func migrateModels(db *gorm.DB) error {
-	err := db.AutoMigrate()
+	err := db.AutoMigrate(&model.UserModel{}, &model.NewsModel{}, &model.BlockModel{}, &model.ImageModel{})
 	if err != nil {
 		return err
 	}
