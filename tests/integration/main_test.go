@@ -90,7 +90,10 @@ func TestMain(m *testing.M) {
 	}
 	cleanDatabase(db, rc)
 	secret := os.Getenv("SECRETWORDJWT")
-	migrateSeeds(db, secret)
+	if err := migrateSeeds(db, secret); err != nil {
+		logger.ZapLogger.Error(err.Error())
+		os.Exit(1)
+	}
 	code := m.Run()
 	cleanDatabase(db, rc)
 	sqldb.Close()
@@ -152,7 +155,6 @@ func migrateSeeds(db *gorm.DB, secret string) error {
 			customer = user
 		} else if u.Role == constsSl.Journalist {
 			journalist = user
-			log.Print("auth_id:" + journalist.Id)
 		} else if u.Role == constsSl.Developer {
 			developer = user
 		}
@@ -166,12 +168,20 @@ func migrateSeeds(db *gorm.DB, secret string) error {
 	if err := db.Create(usersModel).Error; err != nil {
 		return  err
 	}
+	var count int64
+
+	db.Find(&model.UserModel{}).Count(&count)
+	log.Printf("count: %d", count)
 	
 	return nil
 }
 
 func cleanDatabase(db *gorm.DB, rc *redisLib.Client) {
-	db.Session(&gorm.Session{AllowGlobalUpdate: true}).Delete(&model.UserModel{}, &model.NewsModel{}, &model.BlockModel{}, &model.ImageModel{})
+	db.Session(&gorm.Session{AllowGlobalUpdate: true}).Exec(`DELETE FROM authors_news`)
+    db.Session(&gorm.Session{AllowGlobalUpdate: true}).Exec(`DELETE FROM images`)
+    db.Session(&gorm.Session{AllowGlobalUpdate: true}).Exec(`DELETE FROM blocks`)
+    db.Session(&gorm.Session{AllowGlobalUpdate: true}).Exec(`DELETE FROM news_models`)
+    db.Session(&gorm.Session{AllowGlobalUpdate: true}).Exec(`DELETE FROM user_models`)
 	rc.FlushDB(context.Background())
 	logger.ZapLogger.Info("databases were cleaned")
 }
