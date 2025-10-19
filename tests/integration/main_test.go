@@ -178,8 +178,8 @@ func migrateSeeds(db *gorm.DB, secret string) error {
 
 func cleanDatabase(db *gorm.DB, rc *redisLib.Client) {
 	db.Session(&gorm.Session{AllowGlobalUpdate: true}).Exec(`DELETE FROM authors_news`)
-    db.Session(&gorm.Session{AllowGlobalUpdate: true}).Exec(`DELETE FROM images`)
-    db.Session(&gorm.Session{AllowGlobalUpdate: true}).Exec(`DELETE FROM blocks`)
+    db.Session(&gorm.Session{AllowGlobalUpdate: true}).Exec(`DELETE FROM image_models`)
+    db.Session(&gorm.Session{AllowGlobalUpdate: true}).Exec(`DELETE FROM block_models`)
     db.Session(&gorm.Session{AllowGlobalUpdate: true}).Exec(`DELETE FROM news_models`)
     db.Session(&gorm.Session{AllowGlobalUpdate: true}).Exec(`DELETE FROM user_models`)
 	rc.FlushDB(context.Background())
