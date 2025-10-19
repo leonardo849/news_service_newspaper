@@ -1,7 +1,13 @@
 package dto
 
 type CreateBlockDTO struct {
-	Content string `validate:"required,max=1000"`
-	Position uint `validate:"required"`
+	Content string `validate:"required,max=1000" json:"content"`
+	Position uint `validate:"required" json:"position"`
 	Images []CreateImageDTO `json:"images"`
+}
+
+type FindBlockDTO struct {
+	Position uint `json:"position"`
+	Content string `json:"content"`
+	Images []FindImageDTO `json:"images"`
 }

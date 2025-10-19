@@ -1,11 +1,17 @@
 package repository
 
 import (
+	"errors"
+	"fmt"
 	"news_service/internal/dto"
+	"news_service/internal/helper_consts"
 	"news_service/internal/logger"
 	"news_service/internal/model"
+	"time"
 
 	"github.com/google/uuid"
+	errorsUfb "github.com/leonardo849/utils_for_backend/pkg/errors"
+	"github.com/leonardo849/utils_for_backend/pkg/date"
 	"go.uber.org/zap"
 	"gorm.io/gorm"
 )
@@ -33,4 +39,29 @@ func (n *NewsRepository) CreateNews(input dto.CreateNewsDTO, authors []model.Use
 		return nil, err
 	}
 	return &news.ID, nil
+}
+
+func (n *NewsRepository) PublishNews(id string) error {
+	if err := n.db.Model(&model.NewsModel{}).Where("id = ? AND status = ?", id, helper_consts.SKETCH).Updates(map[string]interface{}{"status": helper_consts.PUBLISHED, "published_at": date.PtrTime(time.Now())}).Error; err != nil {
+		return fmt.Errorf("[%s] %s", errorsUfb.INTERNALSERVER, err.Error())
+	}
+	return  nil
+}
+
+func (n *NewsRepository) FindNewsById(id string) (*model.NewsModel, error) {
+	var news model.NewsModel
+	if err := n.db.Where("id = ? AND status = ?", id, helper_consts.PUBLISHED).Preload("Blocks", func(db *gorm.DB) *gorm.DB {
+		return db.Order("position ASC")
+	}).
+	Preload("Blocks.Images").First(&news).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			logger.ZapLogger.Error("error", zap.Error(err))
+			return  nil, fmt.Errorf("[%s] %s", errorsUfb.NOTFOUND, "news wasn't found")
+		} else {
+			logger.ZapLogger.Error("error", zap.Error(err))
+			return  nil, fmt.Errorf("[%s] %s", errorsUfb.INTERNALSERVER, err.Error())
+		}
+	}
+	return  &news, nil
+
 }

@@ -9,35 +9,45 @@ import (
 
 type UserService struct {
 	userRepository *repository.UserRepository
-	model string
+	model          string
 }
 
 func CreateNewUserService(userRepository *repository.UserRepository) *UserService {
-	return  &UserService{
+	return &UserService{
 		userRepository: userRepository,
-		model: "user",
+		model:          "user",
 	}
 }
 
-func (u *UserService) CreateUser(input dtoSl.AuthPublishUserCreated) (status int, message interface{}){
+func (u *UserService) CreateUser(input dtoSl.AuthPublishUserCreated) (status int, message interface{}) {
 	id, err := u.userRepository.CreateUser(input)
 	if err != nil {
 		status, message = errorsSl.HandleErrors(err, u.model)
 		return status, message
 	}
-	
+
 	idStr := id.String()
 
 	return 200, map[string]string{
-		"id": idStr,
+		"id":      idStr,
 		"message": "user was generated",
-	} 
+	}
+}
+
+func (u *UserService) FindUserByUsername(username string) (status int, message interface{}) {
+	user, err := u.userRepository.FindUserByUsername(username)
+	if err != nil {
+		status, message = errorsSl.HandleErrors(err, u.model)
+		return status, message
+	}
+	return 200, *user
 }
 
 func (u *UserService) CreateUsers(input []dtoSl.AuthPublishUserCreated) (status int, message string) {
 	err := u.userRepository.CreateUsers(input)
 	if err != nil {
-		return 500, err.Error()
+		status, message = errorsSl.HandleErrors(err, u.model)
+		return status, message
 	}
 	return 200, "users were created"
 }

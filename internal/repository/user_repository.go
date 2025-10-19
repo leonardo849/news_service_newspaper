@@ -20,16 +20,16 @@ type UserRepository struct {
 }
 
 func CreateUserRepository(db *gorm.DB) *UserRepository {
-	return  &UserRepository{
+	return &UserRepository{
 		db: db,
 	}
 }
 
-func (u *UserRepository) CreateUser(input dtoSl.AuthPublishUserCreated) (*uuid.UUID, error){
+func (u *UserRepository) CreateUser(input dtoSl.AuthPublishUserCreated) (*uuid.UUID, error) {
 	userModel := model.UserModel{
 		Username: input.Username,
-		Role: input.Role,
-		AuthId: input.AuthId,
+		Role:     input.Role,
+		AuthId:   input.AuthId,
 	}
 	var searchedUser model.UserModel
 	result := u.db.Where("username = ?", input.Username).First(&searchedUser)
@@ -58,22 +58,28 @@ func (u *UserRepository) FindOneUserIdByAuthId(authId string) (*uuid.UUID, error
 	return &user.ID, nil
 }
 
+
+
 func (u *UserRepository) CreateUsers(input []dtoSl.AuthPublishUserCreated) error {
+	
+
 	users := funk.Map(input, func(element dtoSl.AuthPublishUserCreated) *model.UserModel {
 		return &model.UserModel{
-			AuthId: element.AuthId,
-			Role: element.Role,
+			AuthId:   element.AuthId,
+			Role:     element.Role,
 			Username: element.Username,
 		}
 	}).([]*model.UserModel)
-	
+
+
+
 	result := u.db.Create(users)
 	if result.Error != nil {
 		logger.ZapLogger.Error("error in creating db users", zap.Error(result.Error))
-		return  result.Error
+		return result.Error
 	}
 	logger.ZapLogger.Info("users were created")
-	return  nil
+	return nil
 }
 
 func (u *UserRepository) DoAuthorsExistAndReturnAuthors(ids []uuid.UUID) ([]model.UserModel, error) {
@@ -85,7 +91,7 @@ func (u *UserRepository) DoAuthorsExistAndReturnAuthors(ids []uuid.UUID) ([]mode
 	err := u.db.Where("id IN ?", ids).Find(&users).Count(&count).Error
 	if err != nil {
 		logger.ZapLogger.Error("error in find authors", zap.Error(err))
-		return  nil, fmt.Errorf("[%s] %s", errorsUfb.NOTFOUND, err.Error())
+		return nil, fmt.Errorf("[%s] %s", errorsUfb.NOTFOUND, err.Error())
 	}
 	for _, user := range users {
 		if user.Role != constsSl.Journalist {
@@ -93,6 +99,19 @@ func (u *UserRepository) DoAuthorsExistAndReturnAuthors(ids []uuid.UUID) ([]mode
 		}
 	}
 	return users, nil
+}
+
+func (u *UserRepository) FindUserByUsername(username string) (*model.UserModel, error) {
+	var user model.UserModel
+	if err := u.db.Where("username = ?", username).First(&user).Error; err != nil {
+		logger.ZapLogger.Error("error", zap.Error(err))
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, fmt.Errorf("[%s] %s", errorsUfb.NOTFOUND, "user wasn't found by username "+username)
+		} else {
+			return nil, fmt.Errorf("[%s] %s", errorsUfb.INTERNALSERVER, err.Error())
+		}
+	}
+	return &user, nil
 }
 
 func (u *UserRepository) SetDatabase(db *gorm.DB) {

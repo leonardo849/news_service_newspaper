@@ -16,5 +16,7 @@ import (
 func setupNewsRoutes(newsGroup fiber.Router, db *gorm.DB, rc *redis.Client) {
 	controller := helper.CreateNewsController(db)
 	newsGroup.Post("/create", middlewaresSl.VerifyJWT(config.Key), controller.CreateNews())
+	newsGroup.Get("/one/:id", middlewaresSl.VerifyJWT(config.Key), controller.FindNewsById())
+	newsGroup.Patch("/update/publish/:id", middlewaresSl.VerifyJWT(config.Key), controller.PublishNewsById())
 	logger.ZapLogger.Info("news's routes are working!")
 }

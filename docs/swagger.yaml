@@ -57,6 +57,50 @@ definitions:
       error:
         type: string
     type: object
+  dto.FindBlockDTO:
+    properties:
+      content:
+        type: string
+      images:
+        items:
+          $ref: '#/definitions/dto.FindImageDTO'
+        type: array
+      position:
+        type: integer
+    type: object
+  dto.FindImageDTO:
+    properties:
+      url:
+        type: string
+    type: object
+  dto.FindNewsDTO:
+    properties:
+      authors:
+        items:
+          type: string
+        type: array
+      blocks:
+        items:
+          $ref: '#/definitions/dto.FindBlockDTO'
+        type: array
+      created_at:
+        type: string
+      published_at:
+        type: string
+      subtitle:
+        type: string
+      title:
+        type: string
+      topic:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  dto.MessageDTO:
+    properties:
+      string:
+        type: string
+    type: object
 host: localhost:port
 info:
   contact: {}
@@ -64,6 +108,44 @@ info:
   title: Backend News service
   version: "1.0"
 paths:
+  /news/{id}:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: news ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.FindNewsDTO'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.ErrorDTO'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/dto.ErrorDTO'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/dto.ErrorDTO'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.ErrorDTO'
+      security:
+      - JWT: []
+      summary: find news
+      tags:
+      - news
   /news/create:
     post:
       consumes:
@@ -101,6 +183,44 @@ paths:
       security:
       - JWT: []
       summary: create news
+      tags:
+      - news
+  /news/publish/{id}:
+    patch:
+      consumes:
+      - application/json
+      parameters:
+      - description: news ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.MessageDTO'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.ErrorDTO'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/dto.ErrorDTO'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/dto.ErrorDTO'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.ErrorDTO'
+      security:
+      - JWT: []
+      summary: publish news
       tags:
       - news
 swagger: "2.0"
