@@ -24,7 +24,7 @@ func CreateNewUserController(userService *service.UserService) *UserController {
 // @Tags        users
 // @Accept      json
 // @Produce     json
-// @Param       news body dto.UpdateAuthorBio true "bio data"
+// @Param       users body dto.UpdateAuthorBioDTO true "bio data"
 // @Success     200 {object} dto.CreatedMessage
 // @Failure     400 {object} dto.ErrorDTO
 // @Failure     401 {object} dto.ErrorDTO

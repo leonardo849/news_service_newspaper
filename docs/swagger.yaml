@@ -57,6 +57,11 @@ definitions:
       error:
         type: string
     type: object
+  dto.FindAuthorsInFindNews:
+    properties:
+      username:
+        type: string
+    type: object
   dto.FindBlockDTO:
     properties:
       content:
@@ -77,7 +82,7 @@ definitions:
     properties:
       authors:
         items:
-          type: string
+          $ref: '#/definitions/dto.FindAuthorsInFindNews'
         type: array
       blocks:
         items:
@@ -98,8 +103,16 @@ definitions:
     type: object
   dto.MessageDTO:
     properties:
-      string:
+      message:
         type: string
+    type: object
+  dto.UpdateAuthorBioDTO:
+    properties:
+      bio:
+        maxLength: 255
+        type: string
+    required:
+    - bio
     type: object
 host: localhost:port
 info:
@@ -223,4 +236,43 @@ paths:
       summary: publish news
       tags:
       - news
+  /users/update/bio:
+    patch:
+      consumes:
+      - application/json
+      parameters:
+      - description: bio data
+        in: body
+        name: users
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UpdateAuthorBioDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.CreatedMessage'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.ErrorDTO'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/dto.ErrorDTO'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/dto.ErrorDTO'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.ErrorDTO'
+      security:
+      - JWT: []
+      summary: update bio
+      tags:
+      - users
 swagger: "2.0"

@@ -196,6 +196,68 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/users/update/bio": {
+            "patch": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "users"
+                ],
+                "summary": "update bio",
+                "parameters": [
+                    {
+                        "description": "bio data",
+                        "name": "users",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.UpdateAuthorBioDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.CreatedMessage"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorDTO"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorDTO"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorDTO"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorDTO"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -284,6 +346,14 @@ const docTemplate = `{
                 }
             }
         },
+        "dto.FindAuthorsInFindNews": {
+            "type": "object",
+            "properties": {
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
         "dto.FindBlockDTO": {
             "type": "object",
             "properties": {
@@ -315,7 +385,7 @@ const docTemplate = `{
                 "authors": {
                     "type": "array",
                     "items": {
-                        "type": "string"
+                        "$ref": "#/definitions/dto.FindAuthorsInFindNews"
                     }
                 },
                 "blocks": {
@@ -347,8 +417,20 @@ const docTemplate = `{
         "dto.MessageDTO": {
             "type": "object",
             "properties": {
-                "string": {
+                "message": {
                     "type": "string"
+                }
+            }
+        },
+        "dto.UpdateAuthorBioDTO": {
+            "type": "object",
+            "required": [
+                "bio"
+            ],
+            "properties": {
+                "bio": {
+                    "type": "string",
+                    "maxLength": 255
                 }
             }
         }
