@@ -50,7 +50,7 @@ func (n *NewsRepository) PublishNews(id string) error {
 
 func (n *NewsRepository) FindNewsById(id string) (*model.NewsModel, error) {
 	var news model.NewsModel
-	if err := n.db.Where("id = ? AND status = ?", id, helper_consts.PUBLISHED).Preload("Blocks", func(db *gorm.DB) *gorm.DB {
+	if err := n.db.Where("id = ? AND status = ?", id, helper_consts.PUBLISHED).Preload("Authors").Preload("Blocks", func(db *gorm.DB) *gorm.DB {
 		return db.Order("position ASC")
 	}).
 	Preload("Blocks.Images").First(&news).Error; err != nil {

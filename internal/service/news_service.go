@@ -75,7 +75,11 @@ func (n *NewsService) FindNewsById(id string) (status int, message interface{}) 
 		status, message = errorsSl.HandleErrors(err, n.model)
 		return status, message
 	}
-
+	authors := funk.Map(news.Authors, func(a model.UserModel) dto.FindAuthorsInFindNews {
+		return dto.FindAuthorsInFindNews{
+			Username: a.Username,
+		}
+	}).([]dto.FindAuthorsInFindNews)
 	blocks := funk.Map(news.Blocks, func(b model.BlockModel) dto.FindBlockDTO {
 	images := funk.Map(b.Images, func(i model.ImageModel) dto.FindImageDTO {
 		return dto.FindImageDTO{
@@ -93,7 +97,7 @@ func (n *NewsService) FindNewsById(id string) (status int, message interface{}) 
 	
 
 	newsDto := dto.FindNewsDTO{
-		Authors: nil,
+		Authors: authors,
 		Title: news.Title,
 		Subtitle: news.Subtitle,
 		Topic: news.Topic,

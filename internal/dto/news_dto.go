@@ -11,7 +11,7 @@ type CreateNewsDTO struct {
 }
 
 type FindNewsDTO struct {
-	Authors   []string       `json:"authors"`
+	Authors   []FindAuthorsInFindNews      `json:"authors"`
 	Title     string         `json:"title"`
 	Subtitle  string         `json:"subtitle"`
 	Topic     string         `json:"topic"`
