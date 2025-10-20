@@ -7,3 +7,6 @@ DATABASE_URI: string
 PORT: string
 REDIS_URI: string
 REDIS_DATABASE: string
+RABBIT_ON: string
+RABBIT_URI: string
+SECRETWORDJWT: string
