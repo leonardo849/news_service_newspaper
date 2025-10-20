@@ -1,7 +1,6 @@
 package integration_test
 
 import (
-	"log"
 	"testing"
 )
 
@@ -36,7 +35,6 @@ func TestCreateNews(t *testing.T) {
 }
 
 func TestPublishNews(t *testing.T) {
-	log.Print(id)
 	e := newExpect(t)
 	e.PATCH("/news/update/publish/" + id).
 	WithHeader("Authorization", "Bearer " + journalist.Token). 
