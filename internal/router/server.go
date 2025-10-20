@@ -35,8 +35,8 @@ func SetupApp(db *gorm.DB, rc *redis.Client) *fiber.App {
 	})
 
 	
-	app.Get("/swagger/*",  middlewaresSl.VerifyJWT(config.Key), middlewaresSl.CheckRole([]string{constsSl.Developer, constsSl.Journalist}) ,swagger.HandlerDefault)
-	app.Get("/metrics", adaptor.HTTPHandler(promhttp.Handler()))
+	app.Get("/swagger/*",  middlewaresSl.VerifyJWT(config.Key), middlewaresSl.CheckRole([]string{constsSl.Developer, constsSl.Ceo}) ,swagger.HandlerDefault)
+	app.Get("/metrics", middlewaresSl.VerifyJWT(config.Key), middlewaresSl.CheckRole([]string{constsSl.Developer, constsSl.Ceo}) ,adaptor.HTTPHandler(promhttp.Handler()))
 	logger.ZapLogger.Info("swagger and prometheus are ready")
 
 	newsGroup := app.Group("/news")
