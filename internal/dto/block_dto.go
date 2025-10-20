@@ -7,6 +7,7 @@ type CreateBlockDTO struct {
 }
 
 type FindBlockDTO struct {
+	ID string `json:"id"`
 	Position uint `json:"position"`
 	Content string `json:"content"`
 	Images []FindImageDTO `json:"images"`

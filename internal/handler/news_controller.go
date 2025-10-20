@@ -4,7 +4,6 @@ import (
 	"news_service/internal/dto"
 	_ "news_service/internal/dto"
 	"news_service/internal/logger"
-	_ "news_service/internal/repository"
 	"news_service/internal/service"
 
 	"github.com/gofiber/fiber/v2"

@@ -7,6 +7,7 @@ type CreateUserFromJsonFileDTO struct {
 }
 
 type FindAuthorsInFindNews struct {
+	ID string `json:"id"`
 	Username string `json:"username"`
 }
 

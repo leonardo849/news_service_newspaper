@@ -7,6 +7,7 @@ import (
 	"news_service/internal/repository"
 	"news_service/internal/unitofwork"
 	"news_service/internal/validate"
+	
 
 	"github.com/google/uuid"
 	errorsSl "github.com/leonardo849/shared_library_news_paper/pkg/errors"
@@ -17,16 +18,18 @@ import (
 type NewsService struct {
 	newsRepository *repository.NewsRepository
 	userRepository *repository.UserRepository
+	newsRedisRepository *repository.NewsRedisRepository
 	unitOfWork *unitofwork.UnitOfWork
 	model string
 }
 
-func CreateNewsService(newsRepository *repository.NewsRepository, userRepository *repository.UserRepository, unitOfWork *unitofwork.UnitOfWork ) *NewsService {
+func CreateNewsService(newsRepository *repository.NewsRepository, userRepository *repository.UserRepository, unitOfWork *unitofwork.UnitOfWork, newsRedisRepository *repository.NewsRedisRepository ) *NewsService {
 	return  &NewsService{
 		newsRepository: newsRepository,
 		userRepository: userRepository,
 		unitOfWork: unitOfWork,
 		model: "news",
+		newsRedisRepository: newsRedisRepository,
 	}
 }
 
@@ -62,6 +65,9 @@ func (n *NewsService) CreateNews(input dto.CreateNewsDTO, id string) (status int
 		return status, message
 	}
 
+	
+
+
 	return 200, map[string]string{
 		"id": newsId,
 		"message": "a new news was generated",
@@ -71,23 +77,26 @@ func (n *NewsService) CreateNews(input dto.CreateNewsDTO, id string) (status int
 func (n *NewsService) FindNewsById(id string) (status int, message interface{}) {
 	news, err := n.newsRepository.FindNewsById(id)
 	if err != nil {
-		logger.ZapLogger.Error("error finding news by id", zap.Error(err))
+		logger.ZapLogger.Error("error finding news by id " + news.ID.String(), zap.Error(err))
 		status, message = errorsSl.HandleErrors(err, n.model)
 		return status, message
 	}
 	authors := funk.Map(news.Authors, func(a model.UserModel) dto.FindAuthorsInFindNews {
 		return dto.FindAuthorsInFindNews{
+			ID: a.ID.String(),
 			Username: a.Username,
 		}
 	}).([]dto.FindAuthorsInFindNews)
 	blocks := funk.Map(news.Blocks, func(b model.BlockModel) dto.FindBlockDTO {
 	images := funk.Map(b.Images, func(i model.ImageModel) dto.FindImageDTO {
 		return dto.FindImageDTO{
+			ID: i.ID.String(),
 			URL:     i.URL,
 		}
 	}).([]dto.FindImageDTO) 
 
 		return dto.FindBlockDTO{
+			ID: b.ID.String(),
 			Position: b.Position,
 			Content:  b.Content,
 			Images:   images,
@@ -97,6 +106,7 @@ func (n *NewsService) FindNewsById(id string) (status int, message interface{}) 
 	
 
 	newsDto := dto.FindNewsDTO{
+		ID: news.ID.String(),
 		Authors: authors,
 		Title: news.Title,
 		Subtitle: news.Subtitle,

@@ -8,4 +8,5 @@ type CreateImageDTO struct {
 
 type FindImageDTO struct {
 	URL string `json:"url"`
+	ID string `json:"id"`
 }
