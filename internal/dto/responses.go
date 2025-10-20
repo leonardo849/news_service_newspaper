@@ -1,7 +1,7 @@
 package dto
 
 type MessageDTO struct {
-	Message string `json:"string"`
+	Message string `json:"message"`
 }
 
 type ErrorDTO struct {

@@ -1,6 +1,11 @@
 package integration_test
 
-import "testing"
+import (
+	"log"
+	"testing"
+)
+
+var id  string
 
 func TestCreateNews(t *testing.T) {
 	news := map[string]interface{}{
@@ -20,9 +25,21 @@ func TestCreateNews(t *testing.T) {
 		},
 	}
 	e := newExpect(t)
-	e.POST("/news/create").
+	response := e.POST("/news/create").
 	WithHeader("Authorization", "Bearer " + journalist.Token).
 	WithJSON(news). 
+	Expect(). 
+	Status(200).
+	JSON().Object()
+
+	id = response.Value("id").String().Raw()
+}
+
+func TestPublishNews(t *testing.T) {
+	log.Print(id)
+	e := newExpect(t)
+	e.PATCH("/news/update/publish/" + id).
+	WithHeader("Authorization", "Bearer " + journalist.Token). 
 	Expect(). 
 	Status(200)
 }
