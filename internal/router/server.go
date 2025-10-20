@@ -40,7 +40,9 @@ func SetupApp(db *gorm.DB, rc *redis.Client) *fiber.App {
 	logger.ZapLogger.Info("swagger and prometheus are ready")
 
 	newsGroup := app.Group("/news")
+	usersGroup := app.Group("/users")
 	setupNewsRoutes(newsGroup, db, rc)
+	setupUserRoutes(usersGroup, db, rc)
 	logger.ZapLogger.Info("app is running!")
 	return  app
 }

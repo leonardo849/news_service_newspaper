@@ -35,9 +35,22 @@ func TestCreateNews(t *testing.T) {
 }
 
 func TestPublishNews(t *testing.T) {
+	
 	e := newExpect(t)
 	e.PATCH("/news/update/publish/" + id).
+	WithHeader("Authorization", "Bearer " + journalist.Token).
+	Expect(). 
+	Status(200)
+}
+
+func TestUpdateBio(t *testing.T) {
+	body := map[string]interface{}{
+		"bio": "i'm a journalist from the us",
+	}
+	e := newExpect(t)
+	e.PATCH("/users/update/bio").
 	WithHeader("Authorization", "Bearer " + journalist.Token). 
+	WithJSON(body).
 	Expect(). 
 	Status(200)
 }

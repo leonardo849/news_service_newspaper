@@ -9,3 +9,7 @@ type CreateUserFromJsonFileDTO struct {
 type FindAuthorsInFindNews struct {
 	Username string `json:"username"`
 }
+
+type UpdateAuthorBioDTO struct {
+	Bio string `json:"bio" validate:"required,max=255"`
+}

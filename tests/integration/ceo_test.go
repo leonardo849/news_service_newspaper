@@ -9,3 +9,15 @@ func TestMetricsCeo(t *testing.T) {
 	Expect().
 	Status(200)
 }
+
+func TestUpdateBioCeo(t *testing.T) {
+	body := map[string]interface{}{
+		"bio": "i'm a ceo from the us",
+	}
+	e := newExpect(t)
+	e.PATCH("/users/update/bio").
+	WithHeader("Authorization", "Bearer " + ceo.Token). 
+	WithJSON(body).
+	Expect(). 
+	Status(200)
+}

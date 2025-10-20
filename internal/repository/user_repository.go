@@ -114,6 +114,14 @@ func (u *UserRepository) FindUserByUsername(username string) (*model.UserModel, 
 	return &user, nil
 }
 
+func (u *UserRepository) UpdateBio(bio string, authId string) error {
+	if err := u.db.Model(&model.UserModel{}).Where("auth_id = ?", authId).UpdateColumn("bio", bio).Error; err != nil {
+		logger.ZapLogger.Error("error updating bio column", zap.Error(err))
+		return  fmt.Errorf("[%s] %s", errorsUfb.INTERNALSERVER, err.Error())
+	}
+	return  nil
+}
+
 func (u *UserRepository) SetDatabase(db *gorm.DB) {
 	if u.db == nil {
 		u.db = db
