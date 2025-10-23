@@ -1,13 +1,13 @@
 package service
 
 import (
+	"context"
 	"news_service/internal/dto"
 	"news_service/internal/logger"
 	"news_service/internal/model"
 	"news_service/internal/repository"
 	"news_service/internal/unitofwork"
 	"news_service/internal/validate"
-	
 
 	"github.com/google/uuid"
 	errorsSl "github.com/leonardo849/shared_library_news_paper/pkg/errors"
@@ -75,9 +75,20 @@ func (n *NewsService) CreateNews(input dto.CreateNewsDTO, id string) (status int
 }
 
 func (n *NewsService) FindNewsById(id string) (status int, message interface{}) {
-	news, err := n.newsRepository.FindNewsById(id)
+	newsFromRedis, err := n.newsRedisRepository.GetNews(id, context.Background())
+	if err == nil {
+		logger.ZapLogger.Info("news  was gotten from redis")
+		return 200, newsFromRedis
+	} 
+	logger.ZapLogger.Info("news with id " +id + " wasn't found in redis" )
+
+	idToUuid, err := uuid.Parse(id)
 	if err != nil {
-		logger.ZapLogger.Error("error finding news by id " + news.ID.String(), zap.Error(err))
+		return 500, err.Error()
+	}
+	news, err := n.newsRepository.FindNewsById(idToUuid)
+	if err != nil {
+		logger.ZapLogger.Error("error finding news by id " + id, zap.Error(err))
 		status, message = errorsSl.HandleErrors(err, n.model)
 		return status, message
 	}
@@ -116,14 +127,32 @@ func (n *NewsService) FindNewsById(id string) (status int, message interface{}) 
 		UpdatedAt: news.UpdatedAt,
 		Published_at: news.Published_at,
 	}
+
+	
+	go func() {
+		if err := n.newsRedisRepository.SetNews(newsDto, context.Background()); err != nil {
+		logger.ZapLogger.Error("error setting news dto in redis", zap.Error(err))
+		return 
+		}
+	}()
+
+	
+	logger.ZapLogger.Info("news was setted in redis")
+	
+
 	return 200, newsDto
 }
 
 func (n *NewsService) PublishNews(id string) (status int, message interface{}) {
-	if err := n.newsRepository.PublishNews(id); err != nil {
+	idToUuid, err := uuid.Parse(id)
+	if err != nil {
+		return 500, err.Error()
+	}
+	if err := n.newsRepository.PublishNews(idToUuid); err != nil {
 		logger.ZapLogger.Error("error publishing news by id", zap.Error(err))
 		status, message = errorsSl.HandleErrors(err, n.model)
 		return status, message
 	}
 	return 200, dto.MessageDTO{Message: "news was published"}
 }
+

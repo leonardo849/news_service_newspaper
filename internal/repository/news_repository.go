@@ -41,14 +41,14 @@ func (n *NewsRepository) CreateNews(input dto.CreateNewsDTO, authors []model.Use
 	return &news.ID, nil
 }
 
-func (n *NewsRepository) PublishNews(id string) error {
+func (n *NewsRepository) PublishNews(id uuid.UUID) error {
 	if err := n.db.Model(&model.NewsModel{}).Where("id = ? AND status = ?", id, helper_consts.SKETCH).Updates(map[string]interface{}{"status": helper_consts.PUBLISHED, "published_at": date.PtrTime(time.Now())}).Error; err != nil {
 		return fmt.Errorf("[%s] %s", errorsUfb.INTERNALSERVER, err.Error())
 	}
 	return  nil
 }
 
-func (n *NewsRepository) FindNewsById(id string) (*model.NewsModel, error) {
+func (n *NewsRepository) FindNewsById(id uuid.UUID) (*model.NewsModel, error) {
 	var news model.NewsModel
 	if err := n.db.Where("id = ? AND status = ?", id, helper_consts.PUBLISHED).Preload("Authors").Preload("Blocks", func(db *gorm.DB) *gorm.DB {
 		return db.Order("position ASC")

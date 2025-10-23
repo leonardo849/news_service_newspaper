@@ -1,10 +1,11 @@
 package redis
 
 import (
+	"context"
 	"fmt"
+	"news_service/internal/logger"
 	"os"
 	"strconv"
-	"news_service/internal/logger"
 
 	"github.com/redis/go-redis/v9"
 	"go.uber.org/zap"
@@ -15,6 +16,7 @@ var Rc *redis.Client
 func ConnectToRedis() (*redis.Client, error) {
 	uriRedis := os.Getenv("REDIS_URI")
 	databaseRedis := os.Getenv("REDIS_DATABASE")
+	redisPassword := os.Getenv("REDIS_PASSWORD")
 	if uriRedis == "" || databaseRedis == "" {
 		err := fmt.Errorf("uri to redis or redis database is empty")
 		logger.ZapLogger.Error("uri to redis or redis database is empty", zap.String("function", "connectToRedis"))
@@ -27,9 +29,15 @@ func ConnectToRedis() (*redis.Client, error) {
 	}
 	rc := redis.NewClient(&redis.Options{
 		Addr: uriRedis,
-		Password: "",
+		Password: redisPassword,
 		DB: dbInt,
 	})
+	pong, err := rc.Ping(context.Background()).Result()
+	if err != nil {
+		logger.ZapLogger.Fatal("error connecting to redis", zap.Error(err))
+	} else {
+		logger.ZapLogger.Info("redis is connected pong: " + pong )
+	}
 	Rc = rc
 	logger.ZapLogger.Info("connected to redis")
 	return rc, nil
