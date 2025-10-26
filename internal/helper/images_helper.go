@@ -6,6 +6,6 @@ import (
 	"gorm.io/gorm"
 )
 
-func CreateImageRepository(db *gorm.DB) *repository.ImageRepository {
+func createImageRepository(db *gorm.DB) *repository.ImageRepository {
 	return repository.CreateImageRepository(db)
 }

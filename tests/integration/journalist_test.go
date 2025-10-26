@@ -1,6 +1,7 @@
 package integration_test
 
 import (
+	"news_service/internal/dto"
 	"testing"
 )
 
@@ -32,6 +33,26 @@ func TestCreateNews(t *testing.T) {
 	JSON().Object()
 
 	id = response.Value("id").String().Raw()
+}
+
+func TestCreateBlocks(t *testing.T) {
+	blocks := []dto.CreateBlockDTO{
+		{
+			Content: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum",
+			Position: 2,
+			Images: nil,
+		},
+		{
+			Content: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum",
+			Position: 3,
+			Images: nil,
+		},
+	}
+	e := newExpect(t)
+	e.POST("/blocks/create/" + id). 
+	WithHeader("Authorization", "Bearer " + journalist.Token).
+	WithJSON(blocks). 
+	Expect().Status(200)
 }
 
 func TestPublishNews(t *testing.T) {

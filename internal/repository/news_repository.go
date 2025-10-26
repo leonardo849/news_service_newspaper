@@ -10,8 +10,9 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	errorsUfb "github.com/leonardo849/utils_for_backend/pkg/errors"
 	"github.com/leonardo849/utils_for_backend/pkg/date"
+	errorsUfb "github.com/leonardo849/utils_for_backend/pkg/errors"
+	"github.com/thoas/go-funk"
 	"go.uber.org/zap"
 	"gorm.io/gorm"
 )
@@ -64,4 +65,32 @@ func (n *NewsRepository) FindNewsById(id uuid.UUID) (*model.NewsModel, error) {
 	}
 	return  &news, nil
 
+}
+
+func (n *NewsRepository) FindNotPublishedNews(id uuid.UUID) (*model.NewsModel, error) {
+	var news model.NewsModel
+	if err := n.db.Where("id = ? AND status = ?", id, helper_consts.SKETCH).Preload("Authors").Preload("Blocks", func(db *gorm.DB) *gorm.DB {
+		return db.Order("position ASC")}).First(&news).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			logger.ZapLogger.Error("error", zap.Error(err))
+			return  nil, fmt.Errorf("[%s] %s", errorsUfb.NOTFOUND, "news wasn't found")
+		} else {
+			logger.ZapLogger.Error("error", zap.Error(err))
+			return  nil, fmt.Errorf("[%s] %s", errorsUfb.INTERNALSERVER, err.Error())
+		}
+	}
+	return  &news, nil
+}
+
+func (n *NewsRepository) FindAuthorsIdsByNews(id uuid.UUID) ([]string, error) {
+	news, err := n.FindNotPublishedNews(id)
+	if err != nil {
+		logger.ZapLogger.Error("error", zap.Error(err))
+		return nil, err
+	}
+	ids := funk.Map(news.Authors, func(author model.UserModel) string {
+		return author.AuthId
+	}).([]string)
+
+	return ids, nil
 }

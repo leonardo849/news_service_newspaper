@@ -10,8 +10,8 @@ func CreateUnitOfWork(db *gorm.DB) *unitofwork.UnitOfWork {
 	return unitofwork.CreateUnitOfWork(
 		createUserRepository(db),
 		db,
-		CreateImageRepository(db),
+		createImageRepository(db),
 		createNewsRepository(db),
-		CreateBlockRepository(db),
+		createBlockRepository(db),
 	)
 }

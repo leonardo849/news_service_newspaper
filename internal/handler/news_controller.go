@@ -97,3 +97,4 @@ func (n *NewsController) PublishNewsById() fiber.Handler {
 		return ctx.Status(200).JSON(message)
 	}
 }
+

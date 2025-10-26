@@ -30,47 +30,68 @@ func CreateUnitOfWork(userRepository *repository.UserRepository, db *gorm.DB, im
 	}
 }
 
+
+func (u *UnitOfWork) createBlocksWithTx(input []dto.CreateBlockDTO, newsId uuid.UUID, tx *gorm.DB) error {
+	for _, e := range input {
+		blockModel := model.BlockModel{
+			Content:  e.Content,
+			Position: e.Position,
+			NewsID:   newsId,
+		}
+
+		idBlock, err := u.blockRepository.CreateBlock(tx, blockModel)
+		if err != nil {
+			logger.ZapLogger.Error(fmt.Sprintf("error creating block. position %d", e.Position), zap.Error(err))
+			return err
+		}
+
+		for _, i := range e.Images {
+			imageModel := model.ImageModel{
+				URL:     i.URL,
+				BlockID: *idBlock,
+			}
+
+			if err := u.imageRepository.CreateImage(imageModel, tx); err != nil {
+				logger.ZapLogger.Error("error creating image", zap.Error(err))
+				return err
+			}
+		}
+	}
+
+	return nil
+}
+
+
 func (u *UnitOfWork) CreateNews(input dto.CreateNewsDTO, authors []model.UserModel) (string, error) {
 	var id *uuid.UUID
 	errTx := u.db.Transaction(func(tx *gorm.DB) error {
 		var err error
-		
-		
-		
-
 		id, err = u.newsRepository.CreateNews(input, authors, tx)
 		if err != nil {
 			return err
 		}
-		
-		for _, e := range input.Blocks {
-			blockModel := model.BlockModel{
-				Content: e.Content,
-				Position: e.Position,
-				NewsID: *id,
-			}
-			var idBlock *uuid.UUID
-			if idBlock, err = u.blockRepository.CreateBlock(tx, blockModel); err != nil {
-				logger.ZapLogger.Error(fmt.Sprintf("error creating block. position %d", e.Position), zap.Error(err))
-				return err
-			}
-			for _, i := range e.Images {
-				imageModel := model.ImageModel{
-					URL: i.URL,
-					BlockID: *idBlock,
-				}
-				if err = u.imageRepository.CreateImage(imageModel, tx); err != nil {
-					logger.ZapLogger.Error("error creating image", zap.Error(err))
-					return  err
-				}
-			}
+
+		if err := u.createBlocksWithTx(input.Blocks, *id, tx); err != nil {
+			return err
 		}
 
-		
-
-		
-		return  nil
+		return nil
 	})
-	return  id.String(), errTx
+
+	if id != nil {
+		return id.String(), errTx
+	}
+	return "", errTx
 }
 
+
+func (u *UnitOfWork) CreateBlocks(input []dto.CreateBlockDTO, newsId uuid.UUID) error {
+	errTx := u.db.Transaction(func(tx *gorm.DB) error {
+		return u.createBlocksWithTx(input, newsId, tx)
+	})
+
+	if errTx == nil {
+		logger.ZapLogger.Info("blocks were created")
+	}
+	return errTx
+}

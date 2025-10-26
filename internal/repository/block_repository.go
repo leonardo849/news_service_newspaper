@@ -1,7 +1,6 @@
 package repository
 
 import (
-	"errors"
 	"fmt"
 	"news_service/internal/logger"
 	"news_service/internal/model"
@@ -23,9 +22,8 @@ func CreateBlockRepository(db *gorm.DB) *BlockRepository {
 }
 
 func (b *BlockRepository) CreateBlock(tx *gorm.DB, input model.BlockModel) (*uuid.UUID, error) {
-	if err := b.FindBlockByPosition(input.NewsID.String(), input.Position, tx); err != nil {
-		logger.ZapLogger.Error("error find block by position", zap.Error(err))
-		return nil, err
+	if b.IsThereABlockInPosition(int(input.Position), input.NewsID.String(), tx) {
+		return nil, fmt.Errorf("[%s] %s", errorsUfb.CONFLICT, "a block in this position")
 	}
 	model := model.BlockModel{
 		Content: input.Content,
@@ -43,13 +41,8 @@ func (b *BlockRepository) CreateBlock(tx *gorm.DB, input model.BlockModel) (*uui
 
 }
 
-func (b *BlockRepository) FindBlockByPosition(newsId string, position uint, tx *gorm.DB) error {
+func (b *BlockRepository) IsThereABlockInPosition(position int, newsId string, tx *gorm.DB) bool {
 	var block model.BlockModel
-	if err := tx.Where("news_id = ? AND position = ?", newsId, position).First(&block).Error; err != nil {
-		if !errors.Is(err, gorm.ErrRecordNotFound) {
-			logger.ZapLogger.Error("error finding block", zap.Error(err))
-			return  fmt.Errorf("[%s] %s", errorsUfb.INTERNALSERVER, err.Error())
-		}
-	}
-	return nil
+	err := tx.Where("news_id = ? AND position = ?", newsId, position).First(&block).Error
+	return err == nil
 }

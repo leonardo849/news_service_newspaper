@@ -41,8 +41,10 @@ func SetupApp(db *gorm.DB, rc *redis.Client) *fiber.App {
 
 	newsGroup := app.Group("/news")
 	usersGroup := app.Group("/users")
+	blocksGroup := app.Group("/blocks")
 	setupNewsRoutes(newsGroup, db, rc)
 	setupUserRoutes(usersGroup, db, rc)
+	setupBlocksRoutes(blocksGroup, db, rc)
 	logger.ZapLogger.Info("app is running!")
 	return  app
 }
@@ -52,7 +54,7 @@ func RunServer(db *gorm.DB, rc *redis.Client) error {
 
 	port := os.Getenv("PORT")
 	if port == "" {
-		port = "8080"
+		port = "8082"
 	}
 
 	return app.Listen(":" + port)

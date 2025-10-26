@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"fmt"
 	"news_service/internal/dto"
 	"news_service/internal/logger"
 	"news_service/internal/model"
@@ -13,6 +14,7 @@ import (
 	errorsSl "github.com/leonardo849/shared_library_news_paper/pkg/errors"
 	"github.com/thoas/go-funk"
 	"go.uber.org/zap"
+	errorsUfb "github.com/leonardo849/utils_for_backend/pkg/errors"
 )
 
 type NewsService struct {
@@ -31,6 +33,27 @@ func CreateNewsService(newsRepository *repository.NewsRepository, userRepository
 		model: "news",
 		newsRedisRepository: newsRedisRepository,
 	}
+}
+
+func (n *NewsService) FindNotPublishedNews(id string, authId string) (status int, message interface{}) {
+	uuid, err := uuid.Parse(id)
+	if err != nil {
+		return 500, err.Error()
+	}
+	authIds, err := n.newsRepository.FindAuthorsIdsByNews(uuid)
+	if err != nil {
+		status, message = errorsSl.HandleErrors(err, n.model)
+		return status, message
+	}
+	if !funk.Contains(authIds, authId) {
+		return 403, fmt.Errorf("[%s] %s", errorsUfb.FORBIDDEN, "you can't acess that news")
+	}
+	news, err := n.newsRepository.FindNotPublishedNews(uuid)
+	if err != nil {
+		status, message = errorsSl.HandleErrors(err, n.model)
+		return status, message
+	}
+	return 200, news
 }
 
 func (n *NewsService) CreateNews(input dto.CreateNewsDTO, id string) (status int, message interface{}) {

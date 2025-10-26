@@ -6,6 +6,10 @@ type CreateBlockDTO struct {
 	Images []CreateImageDTO `json:"images"`
 }
 
+type CreateBlockDTOJSON struct {
+	Blocks []CreateBlockDTO `json:"blocks"`
+}
+
 type FindBlockDTO struct {
 	ID string `json:"id"`
 	Position uint `json:"position"`
