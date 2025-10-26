@@ -26,6 +26,8 @@ func CreateBlockService(newsService *NewsService,  unitOfWork *unitofwork.UnitOf
 	}
 }
 
+
+
 func (b *BlockService) CreateBlocks(input []dto.CreateBlockDTO, newsId string, authId string) (status int, message interface{}) {
 	newsIdToUuid, err := uuid.Parse(newsId)
 	if err != nil {
@@ -41,6 +43,10 @@ func (b *BlockService) CreateBlocks(input []dto.CreateBlockDTO, newsId string, a
 		status, message = errorsSl.HandleErrors(err, b.model)
 		return status, message
 	}
+
+
+	
+
 	return status, dto.MessageDTO{
 		Message: "blocks were created",
 	}
