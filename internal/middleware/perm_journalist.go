@@ -5,9 +5,7 @@ import (
 	"news_service/internal/redis"
 	"news_service/internal/repository"
 	"news_service/internal/service"
-
 	"fmt"
-
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v5"
 	errorsUfb "github.com/leonardo849/utils_for_backend/pkg/errors"
