@@ -50,14 +50,22 @@ func (c *client) createUserFromAuth(input dtoSl.AuthPublishUserCreated, userServ
 }
 
 func (c *client) createUsersFromAuth(input []dtoSl.AuthPublishUserCreated, userService *service.UserService) error {
-	status, message := userService.CreateUsers(input)
-	if status >= 400 {
-		if status == 400 {
-			logger.ZapLogger.Warn("there isn't any valid auth_id")
-			return  nil
-		} else {
-			logger.ZapLogger.Warn("error", zap.Error(errors.New(message)))
-			return  errors.New(message)
+	// status, message := userService.CreateUsers(input)
+	// if status >= 400 {
+	// 	if status == 400 {
+	// 		logger.ZapLogger.Warn("there isn't any valid auth_id")
+	// 		return  nil
+	// 	} else {
+	// 		logger.ZapLogger.Warn("error", zap.Error(errors.New(message)))
+	// 		return  errors.New(message)
+	// 	}
+	// }
+	// return  nil
+	for _, u := range input {
+		status, _ := userService.CreateUser(u)
+		if status >= 400 {
+			logger.ZapLogger.Warn("error creating verified user auth_id:" + u.AuthId)
+			continue
 		}
 	}
 	return  nil
