@@ -127,13 +127,8 @@ func (c *client) consumeTopicUserAuth()  {
 					logger.ZapLogger.Warn("error in json unmarshal", zap.Error(err))
 					continue
 				}
-				if err := c.createUsersFromAuth(usersAuthVerified, userService); err != nil {
-					logger.ZapLogger.Warn("error in create users from auth", zap.Error(err))
-					d.Ack(false)
-					continue
-				} else {
-					d.Ack(false)
-				}
+				c.createUsersFromAuth(usersAuthVerified, userService)
+				d.Ack(false)
 			}
 		}
 	}()
