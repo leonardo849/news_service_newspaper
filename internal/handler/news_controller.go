@@ -88,7 +88,7 @@ func (n *NewsController) FindNewsById() fiber.Handler {
 // @Security    JWT
 func (n *NewsController) PublishNewsById() fiber.Handler {
 	return func(ctx *fiber.Ctx) error {
-		id := ctx.Params("id")
+		id := ctx.Params("news_id")
 		status, message := n.newsService.PublishNews(id)
 		if status >= 400 {
 			logger.ZapLogger.Error("error " + message.(string))

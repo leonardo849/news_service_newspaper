@@ -2,19 +2,17 @@ package service
 
 import (
 	"context"
-	"fmt"
 	"news_service/internal/dto"
 	"news_service/internal/logger"
 	"news_service/internal/model"
 	"news_service/internal/repository"
 	"news_service/internal/unitofwork"
 	"news_service/internal/validate"
-
 	"github.com/google/uuid"
 	errorsSl "github.com/leonardo849/shared_library_news_paper/pkg/errors"
 	"github.com/thoas/go-funk"
 	"go.uber.org/zap"
-	errorsUfb "github.com/leonardo849/utils_for_backend/pkg/errors"
+	
 )
 
 type NewsService struct {
@@ -40,14 +38,7 @@ func (n *NewsService) FindNotPublishedNews(id string, authId string) (status int
 	if err != nil {
 		return 500, err.Error()
 	}
-	authIds, err := n.newsRepository.FindAuthorsIdsByNews(uuid)
-	if err != nil {
-		status, message = errorsSl.HandleErrors(err, n.model)
-		return status, message
-	}
-	if !funk.Contains(authIds, authId) {
-		return 403, fmt.Errorf("[%s] %s", errorsUfb.FORBIDDEN, "you can't acess that news")
-	}
+	
 	news, err := n.newsRepository.FindNotPublishedNews(uuid)
 	if err != nil {
 		status, message = errorsSl.HandleErrors(err, n.model)
@@ -179,3 +170,16 @@ func (n *NewsService) PublishNews(id string) (status int, message interface{}) {
 	return 200, dto.MessageDTO{Message: "news was published"}
 }
 
+func (n *NewsService) FindAuthorsIdsByNews(newsId string) (status int, message interface{}) {
+	uuid, err := uuid.Parse(newsId)
+	if err != nil {
+		return 500, err.Error()
+	}
+	authIds, err := n.newsRepository.FindAuthorsIdsByNewsId(uuid)
+	if err != nil {
+		status, message = errorsSl.HandleErrors(err, n.model)
+		return status, message
+	}
+
+	return 200, authIds
+}

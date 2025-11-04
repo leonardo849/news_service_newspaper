@@ -82,8 +82,8 @@ func (n *NewsRepository) FindNotPublishedNews(id uuid.UUID) (*model.NewsModel, e
 	return  &news, nil
 }
 
-func (n *NewsRepository) FindAuthorsIdsByNews(id uuid.UUID) ([]string, error) {
-	news, err := n.FindNotPublishedNews(id)
+func (n *NewsRepository) FindAuthorsIdsByNewsId(newsId uuid.UUID) ([]string, error) {
+	news, err := n.FindNotPublishedNews(newsId)
 	if err != nil {
 		logger.ZapLogger.Error("error", zap.Error(err))
 		return nil, err
